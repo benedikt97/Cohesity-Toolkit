@@ -38,10 +38,10 @@ unix_timestamp_now = int64(datetime.datetime.timestamp(date)*1000)
 unix_timestamp_start = (unix_timestamp_now - (ts_days * 24 * 60 *60 * 1000))
 print('Datetime: ',date, ' Unit Timestamp: ', unix_timestamp_now, ' - ', unix_timestamp_start)
 
-ts = []
-cpu = []
-nodeids = []
-nodectrl = []
+l_ts = []
+l_cpu = []
+l_id = []
+l_nodectr = []
 
 nodectr = 0
 
@@ -54,60 +54,50 @@ for node in nodelist:
     nodectr += 1
     print('Processing CPU Data from Node: ', nodeid)
     for metric in cpu_timeseries.data_point_vec:
-        ts.append(metric.timestamp_msecs*1000) 
-        cpu.append(metric.data.double_value) 
-        nodeids.append(nodeid)
-        nodectrl.append(nodectr)
+        l_ts.append(metric.timestamp_msecs*1000) 
+        l_cpu.append(metric.data.double_value) 
+        l_nodeid.append(nodeid)
+        l_nodectr.append(nodectr)
 
-
-
-    
-    temp_dict = {'time' : ts, 'nodectr' : nodectrl, 'nodeid' : nodeids, 'cpu' :cpu}
+temp_dict = {'time' : l_ts, 'nodectr' : l_nodectr, 'nodeid' : l_id, 'cpu' :l_cpu}
 df = pd.DataFrame(temp_dict)
 df.to_csv('cohesity_cpu.csv')
+l_ts.clear()
+l_nodectr.clear()
+l_id.clear()
+l_nodectr()
+l_rx_raw = []
+l_tx_raw = []
 
-
-ts = []
-interfacename = []
-nodectrl = []
-rx_raw = []
-rxbs = []
 
 
 ##Interface Stats
 interfaces = []
-interface_list = stats_controller.get_entities('kInterfaceStats', include_aggr_metric_sources=None, metric_names=None, max_entities=None)
-for interface in interface_list:
+temp_interface_list = stats_controller.get_entities('kInterfaceStats', include_aggr_metric_sources=None, metric_names=None, max_entities=None)
+for interface in temp_interface_list:
     ifn = interface.entity_id.entity_id.data.string_value
     if str(ifn).find('bond') != -1:
         interfaces.append(ifn)
 
 for interface in interfaces:
-    ts = []
-    interfacename = []
-    rxbs = []
     print('Processing Network RX Data from Node: ', interface)
     timeseries = stats_controller.get_time_series_stats('kInterfaceStats', 'kRxBytes', unix_timestamp_start, entity_id=interface, entity_id_list=None, end_time_msecs=None, rollup_function=None, rollup_interval_secs=None)
     for metric in timeseries.data_point_vec:
-        ts.append(metric.timestamp_msecs*1000) 
-        rx_raw.append(metric.data.double_value) 
-        interfacename.append(interface)
-        nodectrl.append(nodectr)
+        l_ts.append(metric.timestamp_msecs*1000) 
+        l_rx_raw.append(metric.data.double_value) 
+        l_id.append(interface)
+        l_nodectr.append(nodectr)
 
-    for i in range(len(rx_raw)):
-        if i == 0:
-            p = 1
-        else:
-            p = i
-        
-        rx_delta = rx_raw[p] - rx_raw[p-1]
-        rxbs.append(rx_delta)
-    
-    print(len(rxbs))
-    print(len(rx_raw))
+    timeseries = stats_controller.get_time_series_stats('kInterfaceStats', 'kTxBytes', unix_timestamp_start, entity_id=interface, entity_id_list=None, end_time_msecs=None, rollup_function=None, rollup_interval_secs=None)
+    for metric in timeseries.data_point_vec:
+        l_ts.append(metric.timestamp_msecs*1000) 
+        l_tx_raw.append(metric.data.double_value) 
+        l_id.append(interface)
+        l_nodectr.append(nodectr)
 
 
-temp_dict = {'time' : ts, 'interface' : interfacename, 'rx' :rxbs}
+
+temp_dict = {'time' : l_ts, 'interface' : l_id, 'rx' :l_rx_raw}
 df = pd.DataFrame(temp_dict)
 df.to_csv('cohesity_intf.csv')
 
