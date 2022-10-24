@@ -42,6 +42,8 @@ l_ts = []
 l_cpu = []
 l_id = []
 l_nodectr = []
+l_rx_raw = []
+l_tx_raw = []
 
 nodectr = 0
 
@@ -67,8 +69,7 @@ l_ts.clear()
 l_nodectr.clear()
 l_id.clear()
 l_nodectr.clear()
-l_rx_raw = []
-l_tx_raw = []
+
 
 
 
