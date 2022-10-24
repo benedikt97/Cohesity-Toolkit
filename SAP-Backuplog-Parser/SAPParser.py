@@ -79,10 +79,16 @@ def sapplot(path):
             #df['Multistreaming'].iloc[indexdf] = 'Yes'
             df.at[indexdf, 'Multistreaming'] = 'Yes'
 
+    
+    ###Sort dataframe
+    df.sort_values(by='MB/s', inplace=True, ascending=False)
+    df.head(15).to_csv(path.replace('.txt', '') + '-fastest.csv')
+
+    
     ###Sort dataframe
     df.sort_values(by='start', inplace=True)
 
-
+ 
 
     ### Create Dataframe in Timedomain
     print(path + ' - Creata Dataframe in Timedomain')
@@ -121,7 +127,7 @@ def sapplot(path):
             g = sns.relplot(x="start", y="MB/s", hue="Location", size="SizeGB",
                 alpha=.5, palette="bright",            
                 data=df, aspect=1.7).set(title=plottitle)
-            plt.savefig(path.replace('.txt', '')+ ' - Host-Bubbles.png', dpi=1000, bbox_inches='tight')
+            plt.savefig('graphs/' + path.replace('.txt', '')+ ' - Host-Bubbles.png', dpi=1000, bbox_inches='tight')
             plt.clf()
 
     ### Multistreaming Plot
@@ -132,7 +138,7 @@ def sapplot(path):
     g = sns.relplot(x="start", y="MB/s", hue="Multistreaming", size="SizeGB",
         alpha=.5, palette="bright",            
         data=df, aspect=1.7).set(title=plottitle)
-    plt.savefig(path.replace('.txt', '')+ ' - Multistreaming.png', dpi=1000, bbox_inches='tight')
+    plt.savefig('graphs/' + path.replace('.txt', '')+ ' - Multistreaming.png', dpi=1000, bbox_inches='tight')
     plt.clf()
 
     ### DB Plot
@@ -143,7 +149,7 @@ def sapplot(path):
     g = sns.relplot(x="start", y="MB/s", hue="DB", size="SizeGB",
                 alpha=.5, palette="bright",            
                 data=df, aspect=1.7).set(title=plottitle)
-    plt.savefig(path.replace('.txt', '')+ ' - DB-Bubbles.png', dpi=1000, bbox_inches='tight')
+    plt.savefig('graphs/' + path.replace('.txt', '')+ ' - DB-Bubbles.png', dpi=1000, bbox_inches='tight')
     plt.clf()
 
     plottitle=(path.replace('.txt', '') + ' - Total Size= ' + str(df['SizeGB'].sum()) + 'GB - Duration= ' + str(end_date-start_date)+ 'IO-Graph' )
@@ -151,7 +157,7 @@ def sapplot(path):
     sns.set_context("poster", font_scale=0.3)
     g = sns.lineplot(x="Time", y="IO",
              data=dft).set_title(plottitle)
-    plt.savefig(path.replace('.txt', '')+ ' - IO-graph.png', dpi=1000, bbox_inches='tight')
+    plt.savefig('graphs/' + path.replace('.txt', '')+ ' - IO-graph.png', dpi=1000, bbox_inches='tight')
     plt.clf()
 
     plottitle=(path.replace('.txt', '') + ' - Total Size= ' + str(df['SizeGB'].sum()) + 'GB - Duration= ' + str(end_date-start_date)+ 'Hosts-Graph' )
@@ -159,7 +165,7 @@ def sapplot(path):
     sns.set_context("poster", font_scale=0.3)
     g = sns.lineplot(x="Time", y="Streams",
              data=dft).set_title(plottitle)
-    plt.savefig(path.replace('.txt', '')+ ' - Hosts-graph.png', dpi=1000, bbox_inches='tight')
+    plt.savefig('graphs/' + path.replace('.txt', '')+ ' - Hosts-graph.png', dpi=1000, bbox_inches='tight')
     plt.clf()
 
 if __name__ == '__main__':
