@@ -94,8 +94,8 @@ def sapplot(path):
     print(path + ' - Creata Dataframe in Timedomain')
     dictt = {'Time':[], 'Streams':[], 'IO':[]}
     dft = pd.DataFrame(dictt)
-    start_date = df['start'].iloc[0]
-    act_date = df['start'].iloc[0]
+    start_date = df.at[0, 'start']#df['start'].iloc[0]
+    act_date = df.at[0, 'start']#df['start'].iloc[0]
     end_date = df['end'].iloc[-1]
     delta = datetime.timedelta(minutes=1)
     threads = 0
@@ -105,9 +105,9 @@ def sapplot(path):
     while act_date <= end_date:
         indexdft += 1
         for indexdf in range(len(df.index)):
-            if act_date < df.iloc[indexdf]['end'] and act_date > df.iloc[indexdf]['start']:
+            if act_date < df.at[indexdf ,'end'] and act_date > df.at[indexdf, 'start']:
                 threads += 1
-                iosum += df.iloc[indexdf]['MB/s']
+                iosum += df.at[indexdf, 'MB/s']
         dft.loc[indexdft] = [act_date] + [threads] + [iosum]
         threads = 0
         iosum = 0
