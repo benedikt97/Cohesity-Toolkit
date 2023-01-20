@@ -53,6 +53,7 @@ def sapplot(path):
         df['Zeit'] = pd.to_numeric(df['Zeit'], errors='coerce')
     else:
         df['DB'] = df['System']
+        df['Name'] = df['System']
         df['Host'] = df['System']
         df['DB'] = df['DB'].str.slice(0,1)
         df['SizeGB'] = pd.to_numeric(df['SizeGB'], errors='coerce')
@@ -82,7 +83,7 @@ def sapplot(path):
     
     ###Sort dataframe
     df.sort_values(by='MB/s', inplace=True, ascending=False)
-    df.head(15).to_csv(path.replace('.txt', '') + '-fastest.csv')
+    df.to_csv(path.replace('.txt', '') + '-fastest.csv')
 
     
     ###Sort dataframe
@@ -171,43 +172,30 @@ def sapplot(path):
 if __name__ == '__main__':
     files = [f for f in os.listdir('.') if os.path.isfile(f) and f.endswith('.txt')]
 
+    f_index = 0 
+    while f_index < len(files):
 
-    if len(files) > 0:
-        x1 = multiprocessing.Process(target=sapplot, args=(files[0],))
-        x1.start()
-        print('Started Thread - ' + files[0])
-    
-    if len(files) > 1:
-        x2 = multiprocessing.Process(target=sapplot, args=(files[1],))
-        x2.start()
-        print('Started Thread - ' + files[1])
+        if len(files) > f_index:
+            x1 = multiprocessing.Process(target=sapplot, args=(files[f_index],))
+            x1.start()
+            print('Started Thread - ' + files[f_index])
+        
+        if len(files) > f_index+1:
+            x2 = multiprocessing.Process(target=sapplot, args=(files[f_index+1],))
+            x2.start()
+            print('Started Thread - ' + files[f_index+1])
 
-    if len(files) > 2:
-        x3 = multiprocessing.Process(target=sapplot, args=(files[2],))
-        x3.start()
-        print('Started Thread - ' + files[2])
+        if len(files) > f_index+2:
+            x3 = multiprocessing.Process(target=sapplot, args=(files[f_index+2],))
+            x3.start()
+            print('Started Thread - ' + files[f_index+2])
 
-    if len(files) > 3:
-        x4 = multiprocessing.Process(target=sapplot, args=(files[3],))
-        x4.start()
-        print('Started Thread - ' + files[3])
+        x1.join()
+        x2.join()
+        x3.join()
 
-    if len(files) > 4:
-        x5 = multiprocessing.Process(target=sapplot, args=(files[4],))
-        x5.start()
-        print('Started Thread - ' + files[4])
+        f_index += 3
 
-    if len(files) > 5:
-        x6 = multiprocessing.Process(target=sapplot, args=(files[5],))
-        x6.start()
-        print('Started Thread - ' + files[5])
-    
-    x1.join()
-    x2.join()
-    x3.join()
-    x4.join()
-    x5.join()
-    x6.join()
 
 
 
